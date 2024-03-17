@@ -10,6 +10,7 @@ public class GameControllerScript : MonoBehaviour
     public const float Xspace = 4f;
     public const float Yspace = -5f;
 
+
     [SerializeField] private ImageScript startObject;
     [SerializeField] private Sprite[] images;
 
@@ -110,6 +111,6 @@ public class GameControllerScript : MonoBehaviour
 
     public void Restart()
     {
-        SceneManager.LoadScene("MainScene");
+        SceneManager.LoadScene("GamePlay");
     }
 }
