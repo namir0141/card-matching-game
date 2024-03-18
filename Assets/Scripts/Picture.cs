@@ -7,13 +7,39 @@ public class Picture : MonoBehaviour
     private Material _secondMaterial;
     private Quaternion CurrentRotation;
 
+    [HideInInspector] public bool Reveled = false;
+    private PictureManager _picturemanager;
+    private bool _clicked = false;
+    private int _index;
+
+    public void SetIndex(int id) { _index = id; }
+    public int GetIndex() { return _index; }
+
+
     private void Start()
     {
+        Reveled = false;
+        _clicked = false;
+        _picturemanager = GameObject.Find("PictureManager").GetComponent<PictureManager>();
         CurrentRotation = gameObject.transform.rotation;
     }
     private void OnMouseDown()
     {
-        StartCoroutine(LoopRotation(45, false));
+        if (_clicked == false)
+        {
+            _picturemanager.CurrentPuzzleState = PictureManager.PuzzleState.PuzzleRotation;
+            StartCoroutine(LoopRotation(45, false));
+            _clicked = true;
+        }
+    }
+    public void FlipBack()
+    {
+        if (gameObject.activeSelf)
+        {
+            _picturemanager.CurrentPuzzleState = PictureManager.PuzzleState.PuzzleRotation;
+            Reveled = false;
+            StartCoroutine(LoopRotation(45, true));
+        }
     }
     IEnumerator LoopRotation(float angle, bool FirstMat)
     {
@@ -57,8 +83,16 @@ public class Picture : MonoBehaviour
         gameObject.GetComponent<Transform>().rotation = CurrentRotation;
         if (!FirstMat)
         {
+            Reveled = true;
             ApplySecondMaterial();
+            _picturemanager.CheckPicture();
         }
+        else
+        {
+            _picturemanager.PuzzleRevealedNumber = PictureManager.RevealedNumber.NoRevealed;
+            _picturemanager.CurrentPuzzleState = PictureManager.PuzzleState.CanRotate;
+        }
+        _clicked = false;
     }
 
     public void SetFirstMaterial(Material mat, string texturePath)
@@ -78,5 +112,9 @@ public class Picture : MonoBehaviour
     public void ApplySecondMaterial()
     {
         gameObject.GetComponent<Renderer>().material = _secondMaterial;
+    }
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
     }
 }
