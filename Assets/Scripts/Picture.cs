@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class Picture : MonoBehaviour
 {
+    public AudioClip PressSound;
+    public AudioClip Flip;
+    public AudioClip Match;
     private Material _firstMaterial;
     private Material _secondMaterial;
     private Quaternion CurrentRotation;
@@ -11,10 +14,12 @@ public class Picture : MonoBehaviour
     private PictureManager _picturemanager;
     private bool _clicked = false;
     private int _index;
+    private AudioSource _audio;
+    // private AudioSource flip;
+
 
     public void SetIndex(int id) { _index = id; }
     public int GetIndex() { return _index; }
-
 
     private void Start()
     {
@@ -22,12 +27,23 @@ public class Picture : MonoBehaviour
         _clicked = false;
         _picturemanager = GameObject.Find("PictureManager").GetComponent<PictureManager>();
         CurrentRotation = gameObject.transform.rotation;
+
+        _audio = GetComponent<AudioSource>();
+        _audio.clip = PressSound;
+
+
+
     }
     private void OnMouseDown()
     {
         if (_clicked == false)
         {
             _picturemanager.CurrentPuzzleState = PictureManager.PuzzleState.PuzzleRotation;
+            if (GameSettings.Instance.IsSoundEffectMutedPermanently() == false)
+            {
+                _audio.clip = PressSound;
+                _audio.Play();
+            }
             StartCoroutine(LoopRotation(45, false));
             _clicked = true;
         }
@@ -38,6 +54,11 @@ public class Picture : MonoBehaviour
         {
             _picturemanager.CurrentPuzzleState = PictureManager.PuzzleState.PuzzleRotation;
             Reveled = false;
+            if (GameSettings.Instance.IsSoundEffectMutedPermanently() == false)
+            {
+                _audio.clip = Flip;
+                _audio.Play();
+            }
             StartCoroutine(LoopRotation(45, true));
         }
     }
@@ -115,6 +136,12 @@ public class Picture : MonoBehaviour
     }
     public void Deactivate()
     {
+        StartCoroutine(DeacriveCorutine());
+    }
+    private IEnumerator DeacriveCorutine()
+    {
+        Reveled = false;
+        yield return new WaitForSeconds(1f);
         gameObject.SetActive(false);
     }
 }

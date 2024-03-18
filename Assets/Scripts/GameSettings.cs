@@ -6,6 +6,7 @@ public class GameSettings : MonoBehaviour
     private int _settings;
     private readonly Dictionary<EPuzlleCategories, string> _puzzleCatDirectory = new Dictionary<EPuzlleCategories, string>();
     private const int settingsnumber = 2;
+    private bool _muteFxPermanently = false;
 
     public enum EPairNumber
     {
@@ -107,4 +108,12 @@ public class GameSettings : MonoBehaviour
         }
     }
 
+    public void MuteSoundEffectPermanently(bool muted)
+    {
+        _muteFxPermanently = muted;
+    }
+    public bool IsSoundEffectMutedPermanently()
+    {
+        return _muteFxPermanently;
+    }
 }

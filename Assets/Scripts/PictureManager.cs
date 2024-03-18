@@ -8,6 +8,14 @@ public class PictureManager : MonoBehaviour
     public Transform picSpawnPostion;
     public Vector2 startpostion = new Vector2(-2.15f, 3.62f);
 
+    public GameObject EndGamePanel;
+    public GameObject NewBestScore;
+
+    public GameObject YourScoreText;
+    public GameObject EndTime;
+
+
+
     public enum GameState
     {
         NoAction,
@@ -53,6 +61,10 @@ public class PictureManager : MonoBehaviour
     private int _revelPicNumber = 0;
     private int _pictoDestory1;
     private int _pictoDestory2;
+
+    private bool _coututinesstarted = false;
+    private int _pairNumber;
+    private int _removePiars;
     void Start()
     {
         CurrentGameState = GameState.NoAction;
@@ -62,6 +74,8 @@ public class PictureManager : MonoBehaviour
         _firstRevelPic = -1;
         _secondrevelPic = -1;
 
+        _removePiars = 0;
+        _pairNumber = (int)GameSettings.Instance.GetEPairNumber();
         LoadMaterials();
 
         if (GameSettings.Instance.GetEPairNumber() == GameSettings.EPairNumber.E10Pairs)
@@ -132,12 +146,16 @@ public class PictureManager : MonoBehaviour
         picturelist[_pictoDestory1].Deactivate();
         picturelist[_pictoDestory2].Deactivate();
         _revelPicNumber = 0;
+        _removePiars++;
         CurrentGameState = GameState.NoAction;
         CurrentPuzzleState = PuzzleState.CanRotate;
     }
 
-    private void FlipBack()
+    private IEnumerator FlipBack()
     {
+        _coututinesstarted = true;
+        yield return new WaitForSeconds(0.5f);
+
         picturelist[_firstRevelPic].FlipBack();
         picturelist[_secondrevelPic].FlipBack();
 
@@ -146,6 +164,8 @@ public class PictureManager : MonoBehaviour
 
         PuzzleRevealedNumber = RevealedNumber.NoRevealed;
         CurrentGameState = GameState.NoAction;
+
+        _coututinesstarted = false;
     }
     private void LoadMaterials()
     {
@@ -175,17 +195,40 @@ public class PictureManager : MonoBehaviour
             if (CurrentPuzzleState == PuzzleState.CanRotate)
             {
                 DestroyPicture();
+                CheckGameEnd();
             }
 
         }
         if (CurrentGameState == GameState.FlipBack)
         {
-            if (CurrentPuzzleState == PuzzleState.CanRotate)
+            if (CurrentPuzzleState == PuzzleState.CanRotate && _coututinesstarted == false)
             {
-                FlipBack();
+                StartCoroutine(FlipBack());
+            }
+        }
+        if (CurrentGameState == GameState.GameEnd)
+        {
+            if (picturelist[_firstRevelPic].gameObject.activeSelf == false && picturelist[_secondrevelPic].gameObject.activeSelf == false && EndGamePanel.activeSelf == false)
+            {
+                ShowEndGameInformation();
             }
         }
     }
+
+    private bool CheckGameEnd()
+    {
+        if (_removePiars == _pairNumber && CurrentGameState != GameState.GameEnd)
+        {
+            CurrentGameState = GameState.GameEnd;
+
+        }
+        return (CurrentGameState == GameState.GameEnd);
+    }
+    private void ShowEndGameInformation()
+    {
+        EndGamePanel.SetActive(true);
+    }
+
     private void spawnpicture(int rows, int columns, Vector2 pos, Vector2 offset, bool scaledown)
     {
         for (int col = 0; col < columns; col++)

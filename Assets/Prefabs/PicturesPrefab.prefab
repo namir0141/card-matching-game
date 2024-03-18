@@ -243,4 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfd23b6c7d33b4b49b550dd84b102825, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PressSound: {fileID: 8300000, guid: a9ebba152943d394eaad01eda6a33ed7, type: 3}
+  Flip: {fileID: 8300000, guid: 0d39cb4f0933323499ad352fb69bf6ea, type: 3}
+  Match: {fileID: 8300000, guid: 512ee5c5c81a1754ebf5fa95e0cb7d6d, type: 3}
   Reveled: 0
